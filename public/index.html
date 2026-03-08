@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholarship Finder | Government Scholarships</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i data-lucide="graduation-cap"></i> Scholarship Finder
+    </a>
+    <div class="nav-links" id="nav-links">
+      <!-- Injected by JS -->
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Discover Your Perfect Scholarship</h1>
+      <p>A centralized platform linking Indian students to State and Central Government scholarships based on personalized eligibility.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="/register.html" class="btn-primary" style="text-decoration: none; padding: 0.75rem 1.5rem; font-size: 1.1rem;">Get Started</a>
+        <a href="#how" class="btn-secondary" style="text-decoration: none; padding: 0.75rem 1.5rem; font-size: 1.1rem;">How It Works</a>
+      </div>
+    </section>
+
+    <section id="how" style="margin-top: 5rem; padding-bottom: 3rem;">
+      <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2rem;">How It Works</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center;">
+        <div>
+          <div style="background: #EEF2FF; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--primary);">
+            <i data-lucide="user-plus" style="width: 32px; height: 32px;"></i>
+          </div>
+          <h3>Create Account</h3>
+          <p style="color: var(--text-muted); margin-top: 0.5rem;">Register yourself easily on our platform</p>
+        </div>
+        <div>
+          <div style="background: #EEF2FF; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--primary);">
+            <i data-lucide="file-text" style="width: 32px; height: 32px;"></i>
+          </div>
+          <h3>Fill Eligibility</h3>
+          <p style="color: var(--text-muted); margin-top: 0.5rem;">Enter demographic, income, and education details</p>
+        </div>
+        <div>
+          <div style="background: #EEF2FF; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--primary);">
+            <i data-lucide="check-circle" style="width: 32px; height: 32px;"></i>
+          </div>
+          <h3>Find Matches</h3>
+          <p style="color: var(--text-muted); margin-top: 0.5rem;">Automatically get a list of scholarships you qualify for</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile | Scholarship Finder</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i data-lucide="graduation-cap"></i> Scholarship Finder
+    </a>
+    <div class="nav-links" id="nav-links"></div>
+  </nav>
+
+  <main class="container">
+    <div style="max-width: 600px; margin: 2rem auto; background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+      <h2 style="margin-bottom: 1.5rem; text-align: center;">My Profile</h2>
+      <div id="profile-details" style="display: grid; gap: 1rem;">
+        <!-- Loading -->
+      </div>
+      <div style="margin-top: 2rem; text-align: center;">
+        <a href="/eligibility.html" class="btn-primary" style="text-decoration: none;">Update Eligibility Details</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    lucide.createIcons();
+    enforceAuth();
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/student/me', {
+          headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+          const container = document.getElementById('profile-details');
+          container.innerHTML = `
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted)">Name</span>
+              <strong>${data.name}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted)">Email</span>
+              <strong>${data.email}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted)">State</span>
+              <strong>${data.state || 'Not Provided'}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted)">Category</span>
+              <strong>${data.community || 'Not Provided'}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+              <span style="color: var(--text-muted)">Family Income</span>
+              <strong>₹${data.parent_income || 0}</strong>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

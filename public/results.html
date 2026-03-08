@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholarship Matches | Scholarship Finder</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i data-lucide="graduation-cap"></i> Scholarship Finder
+    </a>
+    <div class="nav-links" id="nav-links"></div>
+  </nav>
+
+  <main class="container">
+    <div class="results-header">
+      <h2>Your Scholarship Matches</h2>
+      <p id="match-summary" style="color: var(--text-muted); margin-top: 0.5rem;">Loading your personalized results...</p>
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+      <button class="btn-primary" id="tab-eligible" onclick="switchTab('eligible')">Eligible Scholarships (<span id="count-eligible">0</span>)</button>
+      <button class="btn-secondary" id="tab-ineligible" onclick="switchTab('ineligible')">Not Eligible (<span id="count-ineligible">0</span>)</button>
+    </div>
+
+    <div id="eligible-container" class="matches-grid">
+      <!-- Injected by JS -->
+    </div>
+
+    <div id="ineligible-container" class="matches-grid hidden">
+      <!-- Injected by JS -->
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    lucide.createIcons();
+    enforceAuth();
+
+    async function loadMatches() {
+      try {
+        const res = await fetch('/api/scholarships/matches', {
+          headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+          renderEligible(data.eligible);
+          renderIneligible(data.ineligible);
+          
+          document.getElementById('count-eligible').textContent = data.eligible.length;
+          document.getElementById('count-ineligible').textContent = data.ineligible.length;
+          if(data.eligible.length > 0) {
+            document.getElementById('match-summary').innerHTML = `You match <strong>${data.eligible.length}</strong> scholarships! Best Match Score: <strong>${data.eligible[0].matchScore}%</strong>`;
+          } else {
+            document.getElementById('match-summary').textContent = "We couldn't find any perfect matches right now.";
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderEligible(list) {
+      const container = document.getElementById('eligible-container');
+      if(list.length === 0) {
+        container.innerHTML = '<p>No eligible scholarships found.</p>';
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div class="scholarship-card">
+          <div>
+            <span class="card-type ${item.scholarship.type === 'Central' ? 'type-central' : 'type-state'}">${item.scholarship.type}</span>
+          </div>
+          <h3 class="card-title">${item.scholarship.name}</h3>
+          <p class="card-meta">
+            <strong>Benefits:</strong> ${item.scholarship.benefits || 'Financial Assistance'}<br>
+            <strong>Deadline:</strong> ${new Date(item.scholarship.deadline).toLocaleDateString()}<br>
+          </p>
+          <div class="card-score">
+            <i data-lucide="check-circle" class="score-perfect" style="width: 16px; height: 16px;"></i>
+            <span class="score-perfect">Match Score: ${item.matchScore}%</span>
+          </div>
+          <a href="${item.scholarship.apply_link}" target="_blank" class="btn-primary" style="text-align: center; text-decoration: none; margin-top: 1rem;">Apply Now</a>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function renderIneligible(list) {
+      const container = document.getElementById('ineligible-container');
+      if(list.length === 0) {
+        container.innerHTML = '<p>No ineligible scholarships found.</p>';
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div class="scholarship-card" style="opacity: 0.8">
+          <div>
+            <span class="card-type ${item.scholarship.type === 'Central' ? 'type-central' : 'type-state'}">${item.scholarship.type}</span>
+          </div>
+          <h3 class="card-title" style="color: var(--text-muted)">${item.scholarship.name}</h3>
+          
+          <div class="ineligible-reasons">
+            <strong>Why you are not eligible:</strong>
+            <ul>
+              ${item.reasons.map(r => `<li>${r}</li>`).join('')}
+            </ul>
+          </div>
+          
+          <div class="card-score" style="margin-top: 1rem;">
+            <i data-lucide="x-circle" style="color: var(--danger); width: 16px; height: 16px;"></i>
+            <span style="color: var(--danger)">Match Score: ${item.matchScore}%</span>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function switchTab(tab) {
+      const elTab = document.getElementById('tab-eligible');
+      const inTab = document.getElementById('tab-ineligible');
+      const elCon = document.getElementById('eligible-container');
+      const inCon = document.getElementById('ineligible-container');
+
+      if (tab === 'eligible') {
+        elTab.className = 'btn-primary';
+        inTab.className = 'btn-secondary';
+        elCon.classList.remove('hidden');
+        inCon.classList.add('hidden');
+      } else {
+        inTab.className = 'btn-primary';
+        elTab.className = 'btn-secondary';
+        inCon.classList.remove('hidden');
+        elCon.classList.add('hidden');
+      }
+    }
+
+    loadMatches();
+  </script>
+</body>
+</html>

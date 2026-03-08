@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Eligibility | Scholarship Finder</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i data-lucide="graduation-cap"></i> Scholarship Finder
+    </a>
+    <div class="nav-links" id="nav-links"></div>
+  </nav>
+
+  <main class="container">
+    <div style="max-width: 600px; margin: 2rem auto;">
+      <h2 style="text-align: center; margin-bottom: 2rem;">Check Scholarship Eligibility</h2>
+      
+      <div class="stepper">
+        <div class="step active" id="indicator-1">1</div>
+        <div class="step" id="indicator-2">2</div>
+        <div class="step" id="indicator-3">3</div>
+      </div>
+
+      <div id="eligibility-alert" class="form-alert"></div>
+
+      <form id="eligibility-form" style="background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border);">
+        
+        <!-- Step 1 -->
+        <div class="step-content active" id="step-1">
+          <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Personal Details</h3>
+          <div class="form-group">
+            <label>Gender</label>
+            <select id="gender" required>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="dob" required>
+          </div>
+          <div class="form-group">
+            <label>State / Domicile</label>
+            <select id="state" required>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+              <option value="Assam">Assam</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Chhattisgarh">Chhattisgarh</option>
+              <option value="Goa">Goa</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Himachal Pradesh">Himachal Pradesh</option>
+              <option value="Jharkhand">Jharkhand</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Manipur">Manipur</option>
+              <option value="Meghalaya">Meghalaya</option>
+              <option value="Mizoram">Mizoram</option>
+              <option value="Nagaland">Nagaland</option>
+              <option value="Odisha">Odisha</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Sikkim">Sikkim</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Tripura">Tripura</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="West Bengal">West Bengal</option>
+              <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+              <option value="Chandigarh">Chandigarh</option>
+              <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+              <option value="Ladakh">Ladakh</option>
+              <option value="Lakshadweep">Lakshadweep</option>
+              <option value="Puducherry">Puducherry</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Religion</label>
+            <select id="religion" required>
+              <option value="Hindu">Hindu</option>
+              <option value="Muslim">Muslim</option>
+              <option value="Christian">Christian</option>
+              <option value="Sikh">Sikh</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Community / Category</label>
+            <select id="community" required>
+              <option value="General">General</option>
+              <option value="SC">SC</option>
+              <option value="ST">ST</option>
+              <option value="OBC">OBC</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex-direction: row; gap: 0.5rem; align-items: center;">
+            <input type="checkbox" id="disabled" style="width: auto;">
+            <label for="disabled" style="margin: 0; font-weight: normal;">Differently Abled</label>
+          </div>
+          <button type="button" class="btn-primary form-btn" onclick="validateStep(1)">Next Step</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-content" id="step-2">
+          <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Family Details</h3>
+          <div class="form-group">
+            <label>Parents Annual Income (₹)</label>
+            <input type="number" id="income" required placeholder="e.g. 250000">
+          </div>
+          <div class="form-group">
+            <label>Parents Profession</label>
+            <input type="text" id="profession" required placeholder="e.g. Farmer, Salaried">
+          </div>
+          <div class="form-group" style="flex-direction: row; gap: 0.5rem; align-items: center;">
+            <input type="checkbox" id="hosteler" style="width: auto;">
+            <label for="hosteler" style="margin: 0; font-weight: normal;">Hosteler</label>
+          </div>
+          <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button type="button" class="btn-secondary form-btn" onclick="nextStep(1)">Back</button>
+            <button type="button" class="btn-primary form-btn" onclick="validateStep(2)">Next Step</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-content" id="step-3">
+          <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Education Details</h3>
+          <div class="form-group">
+            <label>Current Education Level</label>
+            <select id="educationLevel" required>
+              <option value="11th">Class 11</option>
+              <option value="12th">Class 12</option>
+              <option value="UG">Undergraduate (UG)</option>
+              <option value="PG">Postgraduate (PG)</option>
+              <option value="Diploma">Diploma</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Course Name</label>
+            <input type="text" id="courseName" required placeholder="e.g. B.Tech Computer Science">
+          </div>
+          <div class="form-group">
+            <label>Mode of Study</label>
+            <select id="modeOfStudy" required>
+              <option value="Regular">Regular</option>
+              <option value="Distance">Distance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Institute Name</label>
+            <input type="text" id="institute" required placeholder="Name of School or College">
+          </div>
+          <div class="form-group">
+            <label>Previous Year Percentage (%)</label>
+            <input type="number" id="prevPercentage" required placeholder="e.g. 85">
+          </div>
+          <div class="form-group">
+            <label>10th Board Percentage (%)</label>
+            <input type="number" id="tenthPercentage" required placeholder="e.g. 90">
+          </div>
+          <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button type="button" class="btn-secondary form-btn" onclick="nextStep(2)">Back</button>
+            <button type="submit" class="btn-primary form-btn">Submit & Find Matches</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    lucide.createIcons();
+    enforceAuth();
+
+    function nextStep(step) {
+      document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(`step-${step}`).classList.add('active');
+      for(let i=1; i<=step; i++) {
+        document.getElementById(`indicator-${i}`).classList.add('active');
+      }
+    }
+
+    function validateStep(currentStep) {
+      const stepEl = document.getElementById(`step-${currentStep}`);
+      const inputs = stepEl.querySelectorAll('input[required], select[required]');
+      let allValid = true;
+      inputs.forEach(input => {
+        if (!input.value) {
+          allValid = false;
+          input.reportValidity();
+        }
+      });
+      if (allValid) {
+        nextStep(currentStep + 1);
+      }
+    }
+
+    document.getElementById('eligibility-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const payload = {
+        gender: document.getElementById('gender').value,
+        date_of_birth: document.getElementById('dob').value,
+        state: document.getElementById('state').value,
+        religion: document.getElementById('religion').value,
+        community: document.getElementById('community').value,
+        disabled: document.getElementById('disabled').checked,
+        parent_income: parseInt(document.getElementById('income').value),
+        parent_profession: document.getElementById('profession').value,
+        hosteler: document.getElementById('hosteler').checked,
+        education_level: document.getElementById('educationLevel').value,
+        course_name: document.getElementById('courseName').value,
+        mode_of_study: document.getElementById('modeOfStudy').value,
+        institute_name: document.getElementById('institute').value,
+        previous_percentage: parseInt(document.getElementById('prevPercentage').value),
+        percentage_10: parseInt(document.getElementById('tenthPercentage').value),
+        percentage_12: 0
+      };
+
+      try {
+        const res = await fetch(`/api/student/profile`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          window.location.href = '/results.html';
+        } else {
+          const text = await res.json();
+          showAlert('eligibility-alert', text.message || 'Error updating profile');
+        }
+      } catch (err) {
+        showAlert('eligibility-alert', 'Server error format');
+      }
+    });
+  </script>
+</body>
+</html>
