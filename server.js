@@ -21,4 +21,9 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/student', require('./routes/student'));
 app.use('/api/scholarships', require('./routes/scholarships'));
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Export for Vercel
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;
