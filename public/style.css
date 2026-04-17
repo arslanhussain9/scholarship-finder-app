@@ -304,6 +304,11 @@ body {
   color: #B45309;
 }
 
+.type-private {
+  background: #F3E8FF;
+  color: #7E22CE;
+}
+
 .card-title {
   font-size: 1.25rem;
   font-weight: 700;

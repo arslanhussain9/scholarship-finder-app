@@ -21,10 +21,11 @@
       <p style="color: var(--text-muted); margin-top: 0.5rem;">Explore our comprehensive database of Central and State government schemes.</p>
     </div>
 
-    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; flex-wrap: wrap;">
       <button class="btn-primary" id="tab-all" onclick="filterScholarships('All')">All (<span id="count-all">0</span>)</button>
       <button class="btn-secondary" id="tab-central" onclick="filterScholarships('Central')">Central (<span id="count-central">0</span>)</button>
       <button class="btn-secondary" id="tab-state" onclick="filterScholarships('State')">State (<span id="count-state">0</span>)</button>
+      <button class="btn-secondary" id="tab-private" onclick="filterScholarships('Private')">Private (<span id="count-private">0</span>)</button>
     </div>
 
     <div id="scholarships-container" class="matches-grid">
@@ -48,6 +49,7 @@
           document.getElementById('count-all').textContent = allData.length;
           document.getElementById('count-central').textContent = allData.filter(s => s.type === 'Central').length;
           document.getElementById('count-state').textContent = allData.filter(s => s.type === 'State').length;
+          document.getElementById('count-private').textContent = allData.filter(s => s.type === 'Private').length;
           
           renderScholarships(allData);
         }
@@ -66,7 +68,7 @@
       container.innerHTML = list.map(item => `
         <div class="scholarship-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-            <span class="card-type ${item.type === 'Central' ? 'type-central' : 'type-state'}">${item.type}</span>
+        <span class="card-type ${item.type === 'Central' ? 'type-central' : item.type === 'State' ? 'type-state' : 'type-private'}">${item.type}</span>
             <span style="font-size: 0.8rem; color: var(--text-muted);">${item.states.includes('All') ? 'Pan-India' : item.states.join(', ')}</span>
           </div>
           <h3 class="card-title">${item.name}</h3>
@@ -93,6 +95,7 @@
       document.getElementById('tab-all').className = type === 'All' ? 'btn-primary' : 'btn-secondary';
       document.getElementById('tab-central').className = type === 'Central' ? 'btn-primary' : 'btn-secondary';
       document.getElementById('tab-state').className = type === 'State' ? 'btn-primary' : 'btn-secondary';
+      document.getElementById('tab-private').className = type === 'Private' ? 'btn-primary' : 'btn-secondary';
 
       if (type === 'All') {
         renderScholarships(allData);

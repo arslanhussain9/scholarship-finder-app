@@ -3,8 +3,23 @@ const router = express.Router();
 const Scholarship = require('../models/Scholarship');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// Get all scholarships (Public or Admin)
+// Get all approved scholarships (Public)
 router.get('/', async (req, res) => {
+  try {
+    const scholarships = await Scholarship.find({ 
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ] 
+    });
+    res.json(scholarships);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Admin Get All Scholarships (Pending, Approved, Rejected)
+router.get('/admin/all', protect, admin, async (req, res) => {
   try {
     const scholarships = await Scholarship.find({});
     res.json(scholarships);
@@ -38,6 +53,20 @@ router.put('/:id', protect, admin, async (req, res) => {
   }
 });
 
+// Admin Update Scholarship Status (Approve/Reject)
+router.put('/:id/status', protect, admin, async (req, res) => {
+  try {
+    const scholarship = await Scholarship.findById(req.params.id);
+    if (!scholarship) return res.status(404).json({ message: 'Not found' });
+
+    scholarship.status = req.body.status;
+    const updated = await scholarship.save();
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Admin Delete Scholarship
 router.delete('/:id', protect, admin, async (req, res) => {
   try {
@@ -55,7 +84,12 @@ router.delete('/:id', protect, admin, async (req, res) => {
 router.get('/matches', protect, async (req, res) => {
   try {
     const student = req.student;
-    const scholarships = await Scholarship.find({});
+    const scholarships = await Scholarship.find({ 
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ] 
+    });
 
     const eligible = [];
     const ineligible = [];
