@@ -6,7 +6,9 @@ dotenv.config();
 
 const createAdmin = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      dbName: 'scholarship-finder'
+    });
     console.log("Connected to MongoDB Cloud Database");
 
     const adminEmail = 'admin@admin.com';

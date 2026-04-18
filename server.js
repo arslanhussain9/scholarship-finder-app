@@ -30,11 +30,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 let isConnected = false;
 async function connectDB() {
   if (isConnected) return;
-  await mongoose.connect(process.env.MONGO_URI);
-  isConnected = true;
-  console.log('MongoDB Connected');
+  try {
+    await mongoose.connect(process.env.MONGO_URI, { 
+      dbName: 'scholarship-finder' 
+    });
+    isConnected = true;
+    console.log('MongoDB Connected to scholarship-finder');
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+  }
 }
-connectDB().catch(err => console.error('MongoDB error:', err));
+
+// Ensure DB is connected for Vercel serverless functions before handling routes
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));

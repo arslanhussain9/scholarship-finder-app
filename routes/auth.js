@@ -65,6 +65,49 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // --- PERFECT ADMIN LOGIN INTERCEPT ---
+    // Instead of forcing the user to create an admin via DB or CLI,
+    // this instantly logs them in as Admin with the master email and password.
+    if (email === 'admin@scholarshipfinder.com' && password === 'admin123') {
+      let admin = await Student.findOne({ email });
+      if (!admin) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        admin = await Student.create({
+          name: 'Master Admin',
+          email,
+          password: hashedPassword,
+          role: 'admin',
+          // Default required fields for Student Schema
+          gender: 'Other',
+          date_of_birth: new Date(),
+          state: 'All',
+          religion: 'All',
+          community: 'All',
+          parent_income: 0,
+          parent_profession: 'Unknown',
+          education_level: 'Admin',
+          course_name: 'Admin',
+          mode_of_study: 'Admin',
+          institute_name: 'Admin',
+          percentage_10: 100,
+          previous_percentage: 100
+        });
+      } else if (admin.role !== 'admin') {
+        admin.role = 'admin';
+        await admin.save();
+      }
+
+      return res.json({
+        _id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
+        token: generateToken(admin._id),
+      });
+    }
+    // -------------------------------------
+
     const student = await Student.findOne({ email });
 
     if (student && (await bcrypt.compare(password, student.password))) {
