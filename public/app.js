@@ -70,7 +70,13 @@ if (loginForm) {
       if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data));
-        window.location.href = '/eligibility.html';
+        
+        // Redirect based on role
+        if (data.role === 'admin') {
+          window.location.href = '/admin.html';
+        } else {
+          window.location.href = '/eligibility.html';
+        }
       } else {
         showAlert('login-alert', data.message);
       }
@@ -103,7 +109,13 @@ if (registerForm) {
       if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data));
-        window.location.href = '/eligibility.html';
+        
+        // Redirect based on role
+        if (data.role === 'admin') {
+          window.location.href = '/admin.html';
+        } else {
+          window.location.href = '/eligibility.html';
+        }
       } else {
         showAlert('register-alert', data.message);
       }
