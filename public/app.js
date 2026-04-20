@@ -8,6 +8,8 @@ function setupNav() {
   
   if (!navLinks) return;
 
+  const aboutLink = `<a href="/about.html">About</a>`;
+
   if (token) {
     const user = JSON.parse(localStorage.getItem('user'));
     const role = user ? user.role : null; // Assuming user object contains role
@@ -16,6 +18,7 @@ function setupNav() {
       navLinks.innerHTML = `
         <a href="/all-scholarships.html">All Scholarships</a>
         <a href="/admin.html">Admin Dashboard</a>
+        ${aboutLink}
         <button onclick="logout()" class="btn-secondary">Logout</button>
       `;
     } else { // Normal user
@@ -24,6 +27,7 @@ function setupNav() {
         <a href="/eligibility.html">Check Eligibility</a>
         <a href="/results.html">My Matches</a>
         <a href="/profile.html">Profile</a>
+        ${aboutLink}
         <button onclick="logout()" class="btn-secondary">Logout</button>
       `;
     }
@@ -31,6 +35,7 @@ function setupNav() {
     navLinks.innerHTML = `
       <a href="/all-scholarships.html">All Scholarships</a>
       <a href="/index.html">Home</a>
+      ${aboutLink}
       <a href="/login.html">Login</a>
       <a href="/register.html" class="btn-primary">Register</a>
     `;

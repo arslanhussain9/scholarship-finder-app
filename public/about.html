@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | Scholarship Finder</title>
+  <meta name="description" content="Learn more about Scholarship Finder, our mission to help Indian students find government scholarships, and how our platform works.">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .about-section {
+      padding: 4rem 1rem;
+      background: var(--card-bg);
+      border-radius: 12px;
+      margin-top: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-top: 3rem;
+    }
+    @media (max-width: 768px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .feature-list {
+      list-style: none;
+      margin-top: 2rem;
+    }
+    .feature-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .feature-icon {
+      background: #EEF2FF;
+      color: var(--primary);
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .github-cta {
+      background: #111827;
+      color: white;
+      padding: 3rem;
+      border-radius: 12px;
+      text-align: center;
+      margin-top: 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .github-cta h2 {
+      margin-bottom: 0.5rem;
+    }
+    .github-cta p {
+      color: #9CA3AF;
+      max-width: 500px;
+    }
+    .btn-github {
+      background: white;
+      color: #111827;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s;
+    }
+    .btn-github:hover {
+      background: #F3F4F6;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <i data-lucide="graduation-cap"></i> Scholarship Finder
+    </a>
+    <div class="nav-links" id="nav-links">
+      <!-- Injected by JS -->
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="hero">
+      <h1 id="about-title">Empowering Your Educational Journey</h1>
+      <p>Bridging the gap between students and life-changing scholarship opportunities across India.</p>
+    </header>
+
+    <div class="about-section">
+      <div class="about-grid">
+        <div>
+          <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Our Mission</h2>
+          <p style="color: var(--text-muted); font-size: 1.1rem;">
+            Scholarship Finder was built with a single goal in mind: to simplify the complex landscape of government scholarships for Indian students. We believe that financial constraints should never be a barrier to quality education.
+          </p>
+          <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 1rem;">
+            By centralizing data from Central and State government portals, we provide a unified platform where students can find, match, and apply for scholarships that fit their unique profiles and needs.
+          </p>
+        </div>
+        <div>
+          <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">What Students Can Do</h2>
+          <ul class="feature-list">
+            <li class="feature-item">
+              <div class="feature-icon"><i data-lucide="search"></i></div>
+              <div>
+                <h4 style="font-weight: 600;">Browse All Scholarships</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Explore a massive catalog of central, state, and private scholarships in one place.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-icon"><i data-lucide="target"></i></div>
+              <div>
+                <h4 style="font-weight: 600;">Personalized Matching</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">By filling out your details, our system automatically filters scholarships you're eligible for.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-icon"><i data-lucide="user-check"></i></div>
+              <div>
+                <h4 style="font-weight: 600;">Profile Management</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Keep your educational and demographic details updated to never miss out on a new opportunity.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <section class="github-cta">
+      <i data-lucide="github" style="width: 48px; height: 48px;"></i>
+      <div>
+        <h2>Open Source & Transparent</h2>
+        <p>This project is open-source. We believe in transparency and collaboration. You can view our code, contribute to the project, or report issues directly on GitHub.</p>
+      </div>
+      <a href="https://github.com/arslanhussain9/scholarship-finder-app" class="btn-github" target="_blank" id="github-link">
+        View Repository <i data-lucide="external-link" style="width: 18px; height: 18px;"></i>
+      </a>
+    </section>
+
+    <section style="text-align: center; margin-top: 5rem; padding: 4rem 1rem; background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); border-radius: 12px;">
+      <h2 style="font-size: 2rem; margin-bottom: 1rem;">Ready to find your scholarship?</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; margin-inline: auto;">Join thousands of students who have already found their perfect match through our platform.</p>
+      <a href="/register.html" class="btn-primary" style="text-decoration: none; padding: 0.75rem 2rem; font-size: 1.1rem; display: inline-block;">Get Started Now</a>
+    </section>
+
+    <footer style="margin-top: 5rem; text-align: center; color: var(--text-muted); padding-bottom: 3rem;">
+      <p>&copy; 2026 Scholarship Finder. All rights reserved.</p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
