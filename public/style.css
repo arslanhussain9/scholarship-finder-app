@@ -76,6 +76,8 @@ body {
   transition: background-color 0.3s, transform 0.2s;
   border: none;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-primary:hover {
@@ -92,6 +94,8 @@ body {
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-secondary:hover {
