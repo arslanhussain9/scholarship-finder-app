@@ -5,14 +5,26 @@ const API_URL = '/api';
 function setupNav() {
   const token = localStorage.getItem('token');
   const navLinks = document.getElementById('nav-links');
+  const navbar = document.querySelector('.navbar');
   
   if (!navLinks) return;
+
+  // Add mobile menu button if it doesn't exist
+  if (!document.getElementById('menu-toggle')) {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.id = 'menu-toggle';
+    toggleBtn.className = 'menu-toggle';
+    toggleBtn.innerHTML = '<i data-lucide="menu"></i>';
+    toggleBtn.onclick = toggleMenu;
+    navbar.insertBefore(toggleBtn, navLinks);
+    if (window.lucide) lucide.createIcons();
+  }
 
   const aboutLink = `<a href="/about.html">About</a>`;
 
   if (token) {
     const user = JSON.parse(localStorage.getItem('user'));
-    const role = user ? user.role : null; // Assuming user object contains role
+    const role = user ? user.role : null;
 
     if (role === 'admin') {
       navLinks.innerHTML = `
@@ -21,7 +33,7 @@ function setupNav() {
         ${aboutLink}
         <button onclick="logout()" class="btn-secondary">Logout</button>
       `;
-    } else { // Normal user
+    } else {
       navLinks.innerHTML = `
         <a href="/all-scholarships.html">All Scholarships</a>
         <a href="/eligibility.html">Check Eligibility</a>
@@ -31,7 +43,7 @@ function setupNav() {
         <button onclick="logout()" class="btn-secondary">Logout</button>
       `;
     }
-  } else { // Not logged in
+  } else {
     navLinks.innerHTML = `
       <a href="/all-scholarships.html">All Scholarships</a>
       <a href="/index.html">Home</a>
@@ -40,6 +52,11 @@ function setupNav() {
       <a href="/register.html" class="btn-primary">Register</a>
     `;
   }
+}
+
+function toggleMenu() {
+  const navLinks = document.getElementById('nav-links');
+  navLinks.classList.toggle('show');
 }
 
 function logout() {

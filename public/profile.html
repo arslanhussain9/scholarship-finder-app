@@ -42,23 +42,23 @@
         if (res.ok) {
           const container = document.getElementById('profile-details');
           container.innerHTML = `
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+            <div class="profile-row">
               <span style="color: var(--text-muted)">Name</span>
               <strong>${data.name}</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+            <div class="profile-row">
               <span style="color: var(--text-muted)">Email</span>
               <strong>${data.email}</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+            <div class="profile-row">
               <span style="color: var(--text-muted)">State</span>
               <strong>${data.state || 'Not Provided'}</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+            <div class="profile-row">
               <span style="color: var(--text-muted)">Category</span>
               <strong>${data.community || 'Not Provided'}</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+            <div class="profile-row">
               <span style="color: var(--text-muted)">Family Income</span>
               <strong>₹${data.parent_income || 0}</strong>
             </div>

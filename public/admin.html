@@ -18,16 +18,16 @@
   </nav>
 
   <main class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div class="flex-wrap" style="justify-content: space-between; align-items: center; margin-bottom: 2rem;">
       <h2>Manage Scholarships</h2>
-      <div style="display: flex; gap: 1rem;">
+      <div class="flex-wrap">
         <button class="btn-secondary" onclick="runAPIFetch()" id="run-fetch-btn">
           <i data-lucide="refresh-cw" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;"></i> 
-          Fetch Latest Scholarships
+          Fetch Latest
         </button>
         <button class="btn-primary" onclick="document.getElementById('add-modal').classList.remove('hidden')">
           <i data-lucide="plus" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;"></i> 
-          Add New Scholarship
+          Add New
         </button>
       </div>
     </div>
@@ -50,7 +50,7 @@
     </div>
 
     <!-- Edit Modal -->
-    <div id="edit-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+    <div id="edit-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;">
       <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
         <h3 style="margin-bottom: 1.5rem;">Edit Scholarship</h3>
         <form id="edit-form">
@@ -76,7 +76,7 @@
     </div>
 
     <!-- Add Modal -->
-    <div id="add-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+    <div id="add-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;">
       <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
         <h3 style="margin-bottom: 1.5rem;">Add Scholarship</h3>
         <form id="add-form">
