@@ -247,9 +247,44 @@
           showAlert('eligibility-alert', text.message || 'Error updating profile');
         }
       } catch (err) {
-        showAlert('eligibility-alert', 'Server error format');
+        showAlert('eligibility-alert', 'Server error');
       }
     });
+
+    // Fetch and pre-fill existing data
+    async function loadExistingDetails() {
+      try {
+        const res = await fetch('/api/student/me', {
+          headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        const data = await res.json();
+
+        if (res.ok && data) {
+          if (data.gender) document.getElementById('gender').value = data.gender;
+          if (data.date_of_birth) document.getElementById('dob').value = data.date_of_birth.split('T')[0];
+          if (data.state) document.getElementById('state').value = data.state;
+          if (data.religion) document.getElementById('religion').value = data.religion;
+          if (data.community) document.getElementById('community').value = data.community;
+          if (data.disabled !== undefined) document.getElementById('disabled').checked = data.disabled;
+          
+          if (data.parent_income) document.getElementById('income').value = data.parent_income;
+          if (data.parent_profession) document.getElementById('profession').value = data.parent_profession;
+          if (data.hosteler !== undefined) document.getElementById('hosteler').checked = data.hosteler;
+          
+          if (data.education_level) document.getElementById('educationLevel').value = data.education_level;
+          if (data.course_name) document.getElementById('courseName').value = data.course_name;
+          if (data.mode_of_study) document.getElementById('modeOfStudy').value = data.mode_of_study;
+          if (data.institute_name) document.getElementById('institute').value = data.institute_name;
+          if (data.previous_percentage) document.getElementById('prevPercentage').value = data.previous_percentage;
+          if (data.percentage_10) document.getElementById('tenthPercentage').value = data.percentage_10;
+        }
+      } catch (err) {
+        console.error('Error loading existing details:', err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadExistingDetails);
+
   </script>
 </body>
 </html>
