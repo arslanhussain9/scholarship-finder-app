@@ -135,7 +135,20 @@ router.get('/matches', protect, async (req, res) => {
         matchedCriteria++;
       }
 
-      // 5. Check Education Match (if needed)
+      // 5. Check Disability Requirement
+      // Heuristic: If flag is set OR name includes "Disability", check if student is disabled
+      const isDisabilityScholarship = sch.only_for_disabled || sch.name.toLowerCase().includes('disability');
+      if (isDisabilityScholarship && !student.disabled) {
+        isEligible = false;
+        reasons.push(`Only for students with physical disabilities`);
+      } else {
+        // If not a disability scholarship OR student is disabled, increment criteria
+        // (We only penalize if it's reserved for disabled and user is NOT)
+        matchedCriteria++;
+      }
+      totalCriteria++;
+
+      // 6. Check Education Match (if needed)
       // Here we assume "All" if empty, otherwise check
       if (sch.eligible_classes && sch.eligible_classes.length > 0 && sch.eligible_classes[0] !== 'All') {
         totalCriteria++;

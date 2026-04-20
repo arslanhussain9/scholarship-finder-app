@@ -9,6 +9,7 @@ const scholarshipSchema = new mongoose.Schema({
   eligible_gender: { type: String, enum: ['All', 'Male', 'Female'], default: 'All' },
   income_limit: { type: Number, required: true },
   states: [{ type: String }], // 'All' for central
+  only_for_disabled: { type: Boolean, default: false },
   description: { type: String, required: true },
   benefits: { type: String, required: true },
   documents_required: [{ type: String }],
