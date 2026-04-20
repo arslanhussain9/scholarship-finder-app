@@ -58,12 +58,14 @@ const DATA_GOV_API_KEY = '579b464db66ec23bdd0000015b2d3b7e6f394dcf25dfd31c7be3f1
 
 // Each entry: { resourceId, defaultType, defaultLevel }
 const DATA_GOV_RESOURCES = [
-  // Central scholarship disbursement data (NSP)
-  { id: '6cae4b3c-ed02-4186-8b8b-5de3f0d5efd9', type: 'Central', level: 'UG' },
-  // State-wise scholarship statistics
-  { id: 'c7e57af5-6699-4fd3-badb-f4f5f6b71c2f', type: 'Central', level: 'School' },
-  // Minority scholarship data
-  { id: '9ef84268-d588-465a-a308-a864a43d0070', type: 'Central', level: 'UG' },
+  // Central Sector Scheme of Scholarship (Beneficiaries/Schemes)
+  { id: 'b310c148-69b4-4e71-b3ab-d32a3af5cef7', type: 'Central', level: 'UG' },
+  // Post Matric Scholarship Schemes for SC
+  { id: 'ae2a682b-3807-44b2-a61f-0b64cdb02fb8', type: 'Central', level: 'UG' },
+  // Pre-Matric, Post-Matric, and Merit-cum-Means (Allocation/Schemes)
+  { id: 'bf44869a-519f-43cd-84f0-4914e32a37a8', type: 'Central', level: 'Mixed' },
+  // NMMS (National Means cum Merit Scholarship)
+  { id: '349d58f3-8bcc-4140-9774-4b53ef11ba18', type: 'Central', level: 'School' }
 ];
 
 async function scrapeDataGovIn() {
@@ -78,30 +80,37 @@ async function scrapeDataGovIn() {
       console.log(`[API-Fetcher] data.gov.in resource ${resource.id}: ${records.length} records`);
 
       for (const rec of records) {
-        // The field names vary by dataset — pick whichever has scholarship name info
+        // More robust name selection to avoid "random" titles
         const name =
           rec['scholarship_name'] || rec['scheme_name'] || rec['schemeName'] ||
-          rec['name_of_scholarship'] || rec['Scholarship Name'] || rec['Scheme Name'] ||
-          rec['title'] || '';
+          rec['name_of_scholarship'] || rec['Scheme'] || rec['Scholarship'] ||
+          rec['Scheme Name'] || rec['title'] || '';
 
-        if (!name || name.toString().trim().length < 5) continue;
+        // Ignore generic dataset titles or very short strings
+        const nameStr = name.toString().trim();
+        if (!nameStr || nameStr.length < 10 || nameStr.toLowerCase().includes('beneficiaries') || nameStr.toLowerCase().includes('dataset')) continue;
 
-        const state = rec['state'] || rec['State'] || rec['state_name'] || 'All';
-        const ministry = rec['ministry'] || rec['Ministry'] || rec['organization'] || 'Government of India';
+        const state = rec['state'] || rec['State'] || rec['state_name'] || rec['State/UT'] || 'All';
+        const ministry = rec['ministry'] || rec['Ministry'] || rec['organization'] || rec['Department'] || 'Government of India';
+        
+        // Smarter guessing based on the record if available
+        const actualLevel = resource.level === 'Mixed' ? guessLevel(nameStr) : resource.level;
+        const classes = guessClasses(nameStr);
+        const categories = guessCategories(nameStr + ' ' + (rec['category'] || ''));
 
         results.push({
-          name: name.toString().trim().substring(0, 200),
+          name: nameStr.substring(0, 200),
           type: resource.type,
-          scholarship_level: resource.level,
-          eligible_classes: ['UG','PG','Diploma'],
-          eligible_categories: ['All'],
-          eligible_gender: 'All',
-          income_limit: 500000,
-          states: state === 'All' || !state ? ['All'] : [state.toString().trim()],
-          description: `${name}. Offered by: ${ministry}. Source: Government of India Open Data (data.gov.in).`,
-          benefits: 'Financial support — check official NSP portal',
-          documents_required: ['Aadhar Card','Income Certificate','Caste Certificate (if applicable)','Marksheets'],
-          deadline: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000),
+          scholarship_level: actualLevel,
+          eligible_classes: classes,
+          eligible_categories: categories,
+          eligible_gender: guessGender(nameStr),
+          income_limit: 250000,
+          states: state === 'All' || !state || state === 'INDIA' ? ['All'] : [state.toString().trim()],
+          description: `Official ${nameStr} program. Department: ${ministry}.`,
+          benefits: 'Financial assistance as per Government norms. Check NSP portal for latest amounts.',
+          documents_required: ['Aadhar Card', 'Income Certificate', 'Marksheets', 'Caste Certificate (if applicable)'],
+          deadline: new Date(Date.now() + 150 * 24 * 60 * 60 * 1000), // Default 5 months if unknown
           apply_link: 'https://scholarships.gov.in',
           status: 'pending',
           source: 'data.gov.in API'
@@ -111,7 +120,7 @@ async function scrapeDataGovIn() {
       console.error(`[API-Fetcher] data.gov.in ${resource.id} failed:`, err.message);
     }
   }
-  console.log(`[API-Fetcher] data.gov.in total: ${results.length}`);
+  console.log(`[API-Fetcher] data.gov.in total extracted: ${results.length}`);
   return results;
 }
 
@@ -123,8 +132,8 @@ async function scrapeDataGovIn() {
 async function scrapeWikipedia() {
   const results = [];
   try {
-    // Use Wikipedia Search API to find real articles related to Indian Scholarships
-    const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=scholarship%20in%20India&utf8=1&format=json&srlimit=30';
+    // Focus search on "List of scholarships in India" and related specific titles
+    const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=intitle:scholarship%20India&utf8=1&format=json&srlimit=40';
     const raw = await fetchURL(url);
     const json = JSON.parse(raw);
     const searchResults = json.query?.search || [];
@@ -133,35 +142,40 @@ async function scrapeWikipedia() {
     console.log(`[API-Fetcher] Wikipedia API: Found ${searchResults.length} search results`);
 
     for (const item of searchResults) {
-      if (!item.title.toLowerCase().includes('scholarship') && !item.snippet.toLowerCase().includes('scholarship')) continue;
+      const title = item.title;
+      // Skip generic or meta pages
+      if (
+        title.toLowerCase().includes('list of') || 
+        title.toLowerCase().includes('category:') || 
+        title.toLowerCase().includes('education in') ||
+        title.toLowerCase().includes('template:') ||
+        title.length < 10
+      ) continue;
 
-      let name = item.title;
-      // Clean up HTML tags (like <span class="searchmatch">) from snippet
-      let desc = item.snippet.replace(/<\/?[^>]+(>|$)/g, "") + '... (Read more on Wikipedia)';
+      let desc = item.snippet.replace(/<\/?[^>]+(>|$)/g, "") + '...';
 
       results.push({
-        name: name.substring(0, 200),
-        type: guessType(name, desc),
-        scholarship_level: guessLevel(name),
-        eligible_classes: guessClasses(name),
-        eligible_categories: ['All'],
-        eligible_gender: guessGender(name),
-        income_limit: 600000,
-        states: guessState(name + ' ' + desc),
+        name: title.substring(0, 200),
+        type: guessType(title, desc),
+        scholarship_level: guessLevel(title),
+        eligible_classes: guessClasses(title),
+        eligible_categories: guessCategories(title + ' ' + desc),
+        eligible_gender: guessGender(title),
+        income_limit: 400000,
+        states: guessState(title + ' ' + desc),
         description: desc.substring(0, 500),
-        benefits: 'Educational Support — check official portal',
-        documents_required: ['Aadhar Card','Income Certificate','Marksheets'],
-        deadline: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-        apply_link: `https://en.wikipedia.org/wiki/${encodeURIComponent(name.replace(/ /g,'_'))}`,
+        benefits: 'Educational support (check Wikipedia for details)',
+        documents_required: ['Identity Proof', 'Academic Transcript', 'Income Proof'],
+        deadline: new Date(Date.now() + 100 * 24 * 60 * 60 * 1000),
+        apply_link: `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g,'_'))}`,
         status: 'pending',
-        source: 'Wikipedia API (Search)'
+        source: 'Wikipedia API'
       });
     }
 
     console.log(`[API-Fetcher] Wikipedia: ${results.length} scholarships parsed`);
   } catch (err) {
     console.error('[API-Fetcher] Wikipedia API failed:', err.message);
-    throw err; // re-throw so caller marks it as failed
   }
   return results;
 }
@@ -173,36 +187,36 @@ async function scrapeWikipedia() {
 async function scrapeWikipedia2() {
   const results = [];
   try {
-    const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=fellowships%20in%20India&utf8=1&format=json&srlimit=20';
+    // Specifically target fellowship programs which are high quality
+    const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=intitle:fellowship%20India&utf8=1&format=json&srlimit=20';
     const raw = await fetchURL(url);
     const json = JSON.parse(raw);
     const searchResults = json.query?.search || [];
 
     for (const item of searchResults) {
-      if (!item.title.toLowerCase().includes('fellowship') && !item.snippet.toLowerCase().includes('fellowship')) continue;
+      const title = item.title;
+      if (title.toLowerCase().includes('list of') || title.toLowerCase().includes('category:')) continue;
 
-      let name = item.title;
       let desc = item.snippet.replace(/<\/?[^>]+(>|$)/g, "") + '...';
 
       results.push({
-        name: name.substring(0,200),
+        name: title.substring(0, 200),
         type: 'Central',
         scholarship_level: 'Research',
         eligible_classes: ['PG'],
-        eligible_categories: ['All'],
-        eligible_gender: guessGender(name),
-        income_limit: 600000,
-        states: guessState(name + ' ' + desc),
+        eligible_categories: guessCategories(title + ' ' + desc),
+        eligible_gender: guessGender(title),
+        income_limit: 800000,
+        states: guessState(title + ' ' + desc),
         description: desc.substring(0, 500),
-        benefits: 'Research Stipend & Grants',
-        documents_required: ['Aadhar Card', 'Degree Certificates'],
-        deadline: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000),
-        apply_link: `https://en.wikipedia.org/wiki/${encodeURIComponent(name.replace(/ /g,'_'))}`,
+        benefits: 'Research stipend and academic grants.',
+        documents_required: ['Degree Certificates', 'Research Proposal', 'ID Proof'],
+        deadline: new Date(Date.now() + 150 * 24 * 60 * 60 * 1000),
+        apply_link: `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g,'_'))}`,
         status: 'pending',
         source: 'Wikipedia API (Fellowships)'
       });
     }
-    console.log(`[API-Fetcher] Wikipedia2: ${results.length} fellowships found`);
   } catch (err) {
     console.error('[API-Fetcher] Wikipedia2 failed:', err.message);
   }
@@ -214,29 +228,42 @@ async function scrapeWikipedia2() {
 // ─────────────────────────────────────────────────────────────────────────────
 function guessType(n='', d='') {
   const l = (n + ' ' + d).toLowerCase();
-  if (l.includes('state')) return 'State';
-  if (l.includes('private') || l.includes('foundation') || l.includes('corporate') || l.includes('trust')) return 'Private';
+  if (l.includes('state') || l.includes('govt of') || l.includes('government of')) return 'State';
+  if (l.includes('private') || l.includes('foundation') || l.includes('corporate') || l.includes('trust') || l.includes('ltd') || l.includes('limited')) return 'Private';
   return 'Central';
 }
 function guessLevel(n='') {
   const l = n.toLowerCase();
-  if (l.includes('phd')||l.includes('doctoral')||l.includes('research fellow')) return 'Research';
-  if (l.includes(' pg ')||l.includes("master's")||l.includes('postgrad')) return 'PG';
-  if (l.includes('school')||l.includes('10th')||l.includes('12th')||l.includes('secondary')||l.includes('matric')) return 'School';
+  if (l.includes('phd') || l.includes('doctoral') || l.includes('research fellow') || l.includes('fellowship')) return 'Research';
+  if (l.includes(' pg ') || l.includes("master's") || l.includes('postgrad') || l.includes('post-graduate') || l.includes('graduate')) return 'PG';
+  if (l.includes('school') || l.includes('10th') || l.includes('12th') || l.includes('secondary') || l.includes('matric') || l.includes('pre-matric')) return 'School';
   return 'UG';
 }
 function guessClasses(n='') {
   const l = n.toLowerCase();
-  if (l.includes('phd')||l.includes('research')) return ['PG'];
-  if (l.includes("master's")||l.includes(' pg ')) return ['PG'];
-  if (l.includes('12th')||l.includes('class 12')) return ['11th','12th'];
-  if (l.includes('10th')||l.includes('class 10')) return ['9th','10th'];
+  if (l.includes('phd') || l.includes('research')) return ['PG'];
+  if (l.includes("master's") || l.includes(' pg ')) return ['PG'];
+  if (l.includes('12th') || l.includes('class 12')) return ['12th'];
+  if (l.includes('11th') || l.includes('class 11')) return ['11th'];
+  if (l.includes('10th') || l.includes('class 10')) return ['10th'];
+  if (l.includes('matric') || l.includes('school')) return ['9th','10th','11th','12th'];
   return ['UG','PG','Diploma'];
 }
 function guessGender(n='') {
   const l = n.toLowerCase();
-  if (l.includes(' girl')||l.includes(' woman')||l.includes(' women')||l.includes('female')||l.includes('kanya')||l.includes('beti')) return 'Female';
+  if (l.includes(' girl') || l.includes(' woman') || l.includes(' women') || l.includes('female') || l.includes('kanya') || l.includes('beti') || l.includes('mahila')) return 'Female';
+  if (l.includes(' boy') || l.includes(' male')) return 'Male';
   return 'All';
+}
+function guessCategories(n='') {
+  const l = n.toLowerCase();
+  const res = [];
+  if (l.includes(' sc ') || l.includes('scheduled caste')) res.push('SC');
+  if (l.includes(' st ') || l.includes('scheduled tribe')) res.push('ST');
+  if (l.includes(' obc ') || l.includes('other backward')) res.push('OBC');
+  if (l.includes('minority') || l.includes('muslim') || l.includes('christian') || l.includes('sikh')) res.push('Minority');
+  if (l.includes('ews') || l.includes('economically weaker')) res.push('EWS');
+  return res.length > 0 ? res : ['All'];
 }
 function guessState(n='') {
   const l = n.toLowerCase();
